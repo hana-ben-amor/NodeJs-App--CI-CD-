@@ -1,25 +1,31 @@
-    name: Publish Docker image
+name: Publish Docker image
 
-    on:
-        push:
-            branches: ['main']
-    jobs:
-        push_to_registry:
-            name: Push Docker image to Docker Hub
-            runs-on: ubuntu-latest
-            steps:
-              - name: Checkout the repository
-                uses: actions/checkout@v3
-        
-              - name: Login to Docker Hub
-                uses: docker/login-action@v3
-                with:
-                  username: ${{ secrets.DOCKER_USERNAME }}
-                  password: ${{ secrets.DOCKER_PASSWORD }}
-        
-              - name: Build and Push Docker image
-                uses: docker/build-push-action@v2
-                with:
-                  context: .
-                  push: true
-                  tags: your-docker-hub-username/your-image-name:latest
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: your-docker-hub-username/your-image-name:latest
+        env:
+          NODE_VERSION: '20'
+
+      - name: Update Node.js version in Dockerfile
+        run: sed -i 's/node:12/node:20/g' Dockerfile
